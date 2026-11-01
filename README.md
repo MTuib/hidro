@@ -25,7 +25,6 @@ Les lectures segueixen el recorregut simulador → broker MQTT → subscriptor �
 - PostgreSQL i pgAdmin o psql.
 - Accés al broker configurat i credencials vàlides per provar la recepció MQTT.
 - Navegador web. Chart.js **4.5.1** s'inclou com a fitxer estàtic local amb la seva llicència.
-- Node.js només si vols executar les proves JavaScript; no cal per executar el web ni la resta de components.
 
 `requirements.txt` fixa les dependències Python directes i transitives. `requirements-dev.txt` conté les mateixes versions més el client de proves HTTP. Els fitxers `.in` documenten les dependències directes i serveixen per regenerar els manifests després d'una revisió.
 
