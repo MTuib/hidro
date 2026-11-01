@@ -41,7 +41,6 @@ py -3.12 -m venv .venv
 
 Si només vols executar les aplicacions, pots instal·lar `requirements.txt` en lloc de `requirements-dev.txt`. No cal activar l'entorn: les ordres indiquen directament el seu intèrpret.
 
-A Linux/macOS, crea l'entorn amb `python3.12 -m venv .venv` i substitueix `.\.venv\Scripts\python.exe` per `.venv/bin/python`.
 
 ## Configuració compartida
 
