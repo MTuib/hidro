@@ -1,0 +1,7 @@
+{% extends "core/base.html" %}
+{% block title %}Error de consulta{% endblock %}
+{% block content %}
+<h2>No s'ha pogut completar la consulta</h2>
+<p role="alert">{{ error }}</p>
+<p><a href="{% url 'projects:project_list' %}">Tornar als projectes</a></p>
+{% endblock %}

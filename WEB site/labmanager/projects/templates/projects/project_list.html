@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+
+
+{% block content %}
+<h2>Llista de projectes</h2>
+
+
+<ul>
+{% for project in projects %}
+<li>
+<strong>{{ project.nom }}</strong><br>
+{{ project.descripcio }}<br>
+<a href="{% url 'devices:device_list' project.id_proj %}">Veure dispositius</a>
+</li>
+{% endfor %}
+</ul>
+{% endblock %}

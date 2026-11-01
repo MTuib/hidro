@@ -1,0 +1,263 @@
+/* ===== RESET BÀSIC ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #2c2c2c;
+    line-height: 1.6;
+}
+
+/* ===== NAV ===== */
+nav {
+    background-color: #003a8f;
+    padding: 0.8rem 1.5rem;
+}
+
+nav a {
+    color: #ffffff;
+    text-decoration: none;
+    margin-right: 1.2rem;
+    font-weight: 500;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* ===== CONTINGUT ===== */
+main {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+/* ===== TÍTOLS ===== */
+h2 {
+    margin-bottom: 1.2rem;
+    color: #003a8f;
+    border-bottom: 2px solid #e6f0ff;
+    padding-bottom: 0.4rem;
+}
+
+/* ===== LINKS ===== */
+a {
+    color: #0066cc;
+}
+
+a:hover {
+    color: #003a8f;
+}
+
+/* ===== FORMULARIS ===== */
+form {
+    max-width: 400px;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    margin-top: 0.3rem;
+    border: 1px solid #cfd6e0;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+button {
+    margin-top: 1rem;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #003a8f;
+    color: #ffffff;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #002f73;
+}
+
+/* ===== LLISTES ===== */
+ul {
+    list-style: none;
+}
+
+ul li {
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+    background-color: #f9fbfe;
+    border-left: 4px solid #003a8f;
+    border-radius: 4px;
+}
+
+/* ===== SELECT MAGNITUD ===== */
+#magnitude {
+    max-width: 300px;
+    margin: 0.8rem 0 1.5rem 0;
+}
+
+/* ===== GRÀFICA ===== */
+#grafica_container {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #f9fbfe;
+    border-radius: 6px;
+    border: 1px solid #e1e6ef;
+}
+
+/* ===== TAULA ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+}
+
+th {
+    background-color: #003a8f;
+    color: #ffffff;
+    text-align: left;
+    padding: 0.6rem;
+}
+
+td {
+    padding: 0.6rem;
+    border-bottom: 1px solid #e1e6ef;
+}
+
+tr:nth-child(even) {
+    background-color: #f5f7fa;
+}
+
+/* ===== PAGINACIÓ ===== */
+.paginacio {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.paginacio button {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+/* ===== ENRERE ===== */
+a[href*="HTTP_REFERER"] {
+    display: inline-block;
+    margin-top: 2rem;
+    font-weight: 500;
+}
+
+/* ===== SKELETON LOADING ===== */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        #e6eaf0 25%,
+        #f5f7fa 37%,
+        #e6eaf0 63%
+    );
+    background-size: 400% 100%;
+    animation: skeleton-loading 1.2s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0 50%;
+    }
+}
+
+.skeleton-chart {
+    height: 220px;
+    margin-top: 1.5rem;
+}
+
+.skeleton-table {
+    height: 160px;
+    margin-top: 1.5rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    main {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    table {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 600px) {
+    nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    #grafica_container {
+        padding: 0.6rem;
+    }
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    th {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 0.8rem;
+        background: #f9fbfe;
+        padding: 0.6rem;
+        border-radius: 4px;
+    }
+
+    td {
+        border: none;
+        padding: 0.3rem 0;
+    }
+
+    td::before {
+        font-weight: 600;
+        display: inline-block;
+        width: 90px;
+    }
+
+    td:nth-child(1)::before { content: "Data:"; }
+    td:nth-child(2)::before { content: "Valor:"; }
+}
+.filtres-data {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.filtres-data label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 500;
+}

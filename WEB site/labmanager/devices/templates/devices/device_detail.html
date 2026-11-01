@@ -1,0 +1,51 @@
+{% extends "core/base.html" %}
+
+
+{% block content %}
+{% load static %}
+
+<h2>Consulta de dades del dispositiu</h2>
+
+<strong>Nom del Projecte: {{ project.nom }} </strong><br>
+ID del Projecte: {{ project_id }}<br><br>
+
+Nom del Dispositiu: {{ device.nom }}<br>
+ID del Dispositiu: {{ device_id }}<br><br>
+Veure dades del dispositiu:<br>
+<div class="filtres-data">
+    <label>
+        Data inici
+        <input type="date" id="data_inici">
+    </label>
+
+    <label>
+        Data final
+        <input type="date" id="data_final">
+    </label>
+
+    <button id="btnDescarregarCSV" data-project-id="{{ project_id }}" data-device-id="{{ device_id }}">Descarregar CSV</button>
+</div>
+<select id="magnitude" data-project-id="{{ project_id }}" data-device-id="{{ device_id }}">
+    <option value="" disabled selected hidden>Selecciona una opción...</option>
+    <option value="Nivell">Nivell</option>
+    <option value="Temperatura">Temperatura</option>
+    <option value="Conductivitat">Conductivitat</option>
+    <option value="Salinity">Salinitat</option>
+    <option value="TDS">TDS</option>
+    <option value="Consum">Consum</option>
+    <option value="Signal">Senyal</option>
+    <option value="Voltatge">Voltatge</option>
+</select>
+
+<div id="grafica_container">
+    <canvas id="grafica" height="100"></canvas>
+</div>
+
+<div id="taula"></div>
+
+<a href="{{ request.META.HTTP_REFERER }}">Enrere</a>
+
+<script src="{% static 'js/script.js' %}"></script>
+
+
+{% endblock %}

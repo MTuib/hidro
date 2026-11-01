@@ -1,0 +1,56 @@
+<table>
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if page_obj and page_obj.object_list %}
+            {% for d in page_obj %}
+                <tr>
+                    <td>{{ d.data|date:"d/m/Y H:i:s" }}</td>
+                    <td>{{ d.valor }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="2">No hi ha dades per mostrar</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<div class="paginacio">
+    {% if page_obj.has_previous %}
+        <button
+            class="btn-pagina"
+            data-pagina="{{ page_obj.previous_page_number }}"
+            data-magnitud="{{ magnitud|default:'' }}"
+            data-project="{{ project_id }}"
+            data-device="{{ device_id }}"
+            data-data-inici="{{ data_inici|default:'' }}"
+            data-data-final="{{ data_final|default:'' }}"
+        >
+            Anterior
+</button>
+    {% endif %}
+
+    <span>
+        Pàgina {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <button
+            class="btn-pagina"
+            data-pagina="{{ page_obj.next_page_number }}"
+            data-magnitud="{{ magnitud|default:'' }}"
+            data-project="{{ project_id }}"
+            data-device="{{ device_id }}"
+            data-data-inici="{{ data_inici|default:'' }}"
+            data-data-final="{{ data_final|default:'' }}"
+        >
+            Següent
+        </button>
+    {% endif %}
+</div>

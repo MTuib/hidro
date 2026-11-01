@@ -1,0 +1,14 @@
+#Dependències directes de referència; instal·la requirements.txt.
+#Python de referència: 3.12.14.
+fastapi==0.162.0
+pydantic==2.14.1
+SQLAlchemy==2.1.6
+python-jose[cryptography]==3.5.0
+pwdlib[argon2]==0.3.1
+python-multipart==0.0.32
+psycopg2-binary==2.9.13
+uvicorn==0.54.0
+Django==6.0.9
+requests==2.34.2
+python-dotenv[cli]==1.2.4
+paho-mqtt==2.1.0

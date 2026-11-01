@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+
+
+{% block content %}
+<h2>Dispositius del projecte</h2>
+
+
+{% for device in devices %}
+<a href="{% url 'devices:device_detail' project_id device.id_disp %}">{{ device.nom }} (ID: {{ device.id_disp }})</a><br>
+{% endfor %}
+
+{% endblock %}
