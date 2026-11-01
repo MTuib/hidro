@@ -8,7 +8,7 @@ Variables principals de connexió: `BROKER_URL`, `BROKER_PORT`, `MQTT_USERNAME` 
 
 Dependències principals: paho-mqtt i python-dotenv.
 
-Per sortir, escriu `x`. R08 comparteix un senyal d'aturada entre totes les sondes i espera que finalitzin els fils iniciats. 
+Per sortir, escriu `x`.
 
 
 
