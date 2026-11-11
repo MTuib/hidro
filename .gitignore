@@ -31,5 +31,4 @@ htmlcov/
 Thumbs.db
 
 #Mòduls ajornats i seed SQL antic
-/APP subscriptor/APPmonitoreig/
 /SQL scripts/preset.sql
