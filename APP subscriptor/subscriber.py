@@ -13,6 +13,8 @@ import paho.mqtt.client as mqtt
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 from backup import Backup
+from APPmonitoreig.alarma import Alarma
+from APPmonitoreig.telegram import AlertService
 
 
 class Subscriber:
@@ -42,9 +44,19 @@ class Subscriber:
         self.session = requests.Session()
         self.backup = Backup()
 
+        #Inicialitzar alarma i servei d'alertes
         self.stop_event = threading.Event()
-        #self.alarma = Alarma(self.stop_event)
-        #self.alarma.start()
+        self.alarma = Alarma(self.stop_event)
+        self.alarma.start()
+
+        self.servei_alertes = AlertService()
+        self.fil_alertes = threading.Thread(
+            target=self.servei_alertes.run,
+            args=(self.stop_event,),
+            daemon=True,
+        )
+        self.fil_alertes.start()
+        ###########################
 
         self.client = mqtt.Client(
             client_id="hidro_subscriber",

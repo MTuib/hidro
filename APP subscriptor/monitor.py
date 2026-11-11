@@ -1,4 +1,6 @@
 import os
+import signal
+import sys
 from dotenv import load_dotenv
 from subscriber import Subscriber
 
@@ -33,7 +35,15 @@ mode = "db"  #Mode de funcionament: "print" per imprimir missatges sense bbdd, "
 subscriber = Subscriber(BROKER, PORT, TOPIC, USERNAME, PASSWORD, mode)
 subscriber.start()
 
-#Esperar a que l'usuari premi Enter per aturar el monitor
-input("")
-subscriber.stop()
-print("Monitor aturat.")
+# La consola s'atura amb Enter. El servei sense terminal espera el senyal de sortida.
+try:
+    if sys.stdin.isatty():
+        input("")
+    else:
+        signal.signal(signal.SIGTERM, lambda *_: subscriber.stop_event.set())
+        subscriber.stop_event.wait()
+except KeyboardInterrupt:
+    pass
+finally:
+    subscriber.stop()
+    print("Monitor aturat.")
