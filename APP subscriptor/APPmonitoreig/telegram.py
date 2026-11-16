@@ -11,7 +11,7 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 class AlertService:
     # Configuració API i Telegram
-    API_ROOT = os.environ["API_ROOT"]
+    API_ROOT = os.environ["API_ROOT"].strip().rstrip("/")
     LOGIN_URL = f"{API_ROOT}/usuaris/login"
     DISPOSITIU_URL = f"{API_ROOT}/dispositius/"
     DADA_URL = f"{API_ROOT}/dada"
@@ -49,18 +49,21 @@ class AlertService:
 
 
     #Telegram
-    def enviar_telegram(self, missatge: str):
+    def enviar_telegram(self, missatge: str) -> bool:
         url = f"https://api.telegram.org/bot{self.TELEGRAM_BOT_TOKEN}/sendMessage"
         data = {
             "chat_id": self.TELEGRAM_CHAT_ID,
             "text": missatge,
-            "parse_mode": "Markdown",
         }
 
         try:
-            self.session.post(url, data=data, timeout=10)
-        except Exception as e:
-            print(f"{self.ts()} ERROR Telegram: {e}")
+            resp = self.session.post(url, data=data, timeout=10)
+            if resp.status_code == 200 and resp.json().get("ok") is True:
+                return True
+            print(f"{self.ts()} Telegram no ha confirmat l'enviament")
+        except (requests.exceptions.RequestException, ValueError, AttributeError):
+            print(f"{self.ts()} ERROR en l'enviament a Telegram")
+        return False
 
     #API Login i consultes
     def login(self) -> bool:
@@ -72,40 +75,54 @@ class AlertService:
         }
 
         resp = self.session.post(self.LOGIN_URL, data=form, timeout=10)
-        data = resp.json()
-
-        if not data.get("access_token"):
+        if resp.status_code != 200:
+            print(f"{self.ts()} Login fallit: HTTP {resp.status_code}")
+            return False
+        try:
+            data = resp.json()
+        except ValueError:
+            print(f"{self.ts()} Resposta de login no vàlida")
+            return False
+        token = data.get("access_token") if isinstance(data, dict) else None
+        if not isinstance(token, str) or not token.strip():
             print(f"{self.ts()} Login fallit")
             return False
 
-        self.jwt_token = data["access_token"]
+        self.jwt_token = token
         print(f"{self.ts()} Token actualitzat")
         return True
 
-    def get_dispositiu_id(self, disp_nom: str) -> int | None:
-        resp = self.session.get(
-            self.DISPOSITIU_URL + disp_nom,
-            headers=self.headers(),
-            timeout=10
-        )
-
-        if resp.status_code == 401 and self.login():
-            return self.get_dispositiu_id(disp_nom)
-
-        if resp.status_code != 200:
-            print(f"{self.ts()} Dispositiu no vàlid: {disp_nom}")
-            return None
-
-        return resp.json().get("id_disp")
+    def get_dispositiu_id(self, sonda: str) -> int | None:
+        #Degut a modificació de la BBDD és manté l'identificació per topic i per nom. 
+        #Un tòpic complet conté '/'. Els noms antics només s'accepten si són únics.
+        per_topic = "/" in sonda
+        url = self.DISPOSITIU_URL if per_topic else self.DISPOSITIU_URL + sonda
+        params = {"topic": sonda} if per_topic else None
+        for intent in range(2):
+            resp = self.session.get(
+                url, params=params, headers=self.headers(), timeout=10
+            )
+            if resp.status_code == 401 and intent == 0 and self.login():
+                continue
+            if resp.status_code != 200:
+                print(f"{self.ts()} No es pot identificar {sonda}: HTTP {resp.status_code}")
+                return None
+            try:
+                data = resp.json()
+            except ValueError:
+                return None
+            disp_id = data.get("id_disp") if isinstance(data, dict) else None
+            return disp_id if type(disp_id) is int else None
+        return None
 
     #Logica d'alertes
-    def sonda_ha_publicat(self, sonda: str, hores: int) -> bool:
+    def sonda_ha_publicat(self, sonda: str, hores: int) -> bool | None:
         ara = datetime.now(timezone.utc)
         temps_limit = ara - timedelta(hours=hores)
 
         disp_id = self.get_dispositiu_id(sonda)
         if disp_id is None:
-            return False
+            return None
 
         params = {"data_inici": temps_limit.isoformat()}
         url = f"{self.DADA_URL}/{disp_id}/"
@@ -114,9 +131,13 @@ class AlertService:
 
         if resp.status_code != 200:
             print(f"{self.ts()} Error consultant dades de {sonda}")
-            return False
+            return None
 
-        return len(resp.json()) > 0
+        try:
+            dades = resp.json()
+        except ValueError:
+            return None
+        return bool(dades) if isinstance(dades, list) else None
 
     def pot_enviar_alerta(self, sonda: str) -> bool:
         avui = date.today()
@@ -126,7 +147,11 @@ class AlertService:
         self.alertes_enviades[sonda] = date.today()
 
     def comprovar_sonda(self, sonda: str, hores: int):
-        if self.sonda_ha_publicat(sonda, hores):
+        ha_publicat = self.sonda_ha_publicat(sonda, hores)
+        if ha_publicat is None:
+            print(f"{self.ts()} Comprovació de {sonda} no completada; no es genera avís d'inactivitat")
+            return
+        if ha_publicat:
             print(f"{self.ts()} OK → {sonda}")
             return
 
@@ -135,15 +160,15 @@ class AlertService:
             return
 
         missatge = (
-            "🚨 *ALERTA DE SONDA*\n\n"
+            "🚨 ALERTA DE SONDA\n\n"
             f"🕒 Data: {self.ts()}\n"
             f"📡 Sonda: {sonda}\n"
             f"⏰ Sense dades en les darreres {hores} hores\n"
-            "❌ Revisar connexió, estat del dispositiu i carpeta *pendents*"
+            "❌ Revisar connexió, estat del dispositiu i carpeta pendents"
         )
 
-        self.enviar_telegram(missatge)
-        self.marcar_alerta_enviada(sonda)
+        if self.enviar_telegram(missatge):
+            self.marcar_alerta_enviada(sonda)
 
     #TASCA PROGRAMADA
     def tasca_diaria(self):
@@ -151,11 +176,9 @@ class AlertService:
             if not self.login():
                 return
 
-            sondes = [
-                nom.strip()
-                for nom in os.environ["ALERTA_SONDES"].split(",")
-                if nom.strip()
-            ]
+            topics = os.getenv("ALERTA_TOPICS", "").strip()
+            configuracio = topics or os.getenv("ALERTA_SONDES", "")
+            sondes = [nom.strip() for nom in configuracio.split(",") if nom.strip()]
             hores_permeses = int(os.environ["ALERTA_HORES"])
 
             for sonda in sondes:
@@ -168,7 +191,7 @@ class AlertService:
             print(f"{self.ts()} API no disponible")
 
             missatge = (
-                "🚨 *ALERTA D'API*\n\n"
+                "🚨 ALERTA D'API\n\n"
                 f"🕒 Data: {self.ts()}\n"
                 "❌ No s'ha pogut contactar amb l'API "
                 "o s'ha superat el temps d'espera.\n"

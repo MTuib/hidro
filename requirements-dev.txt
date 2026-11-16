@@ -29,6 +29,7 @@ python-jose==3.5.0
 python-multipart==0.0.32
 requests==2.34.2
 rsa==4.9.1
+schedule==1.2.2
 six==1.17.0
 sqlalchemy==2.1.6
 sqlparse==0.6.0

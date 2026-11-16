@@ -57,7 +57,16 @@ def get_dades_by_dispositiu(db: Session, id_disp: int, limit: int = 40):
 def get_dispositiu_by_nom(db: Session, nom: str):
     return db.query(Dispositiu)\
              .filter(Dispositiu.nom == nom)\
-             .first()
+             .limit(2)\
+             .one_or_none()
+
+
+#Cercar dispositiu per tòpic
+def get_dispositiu_by_topic(db: Session, topic: str):
+    return db.query(Dispositiu)\
+             .filter(Dispositiu.url == topic)\
+             .limit(2)\
+             .one_or_none()
 
 
 #Obtenir projectes associats a un usuari

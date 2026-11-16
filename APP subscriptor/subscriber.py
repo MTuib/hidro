@@ -159,19 +159,17 @@ class Subscriber:
         return True
 
     def guardar_dada_db(self, msg) -> bool:
-        parts = msg.topic.split("/")
-        if len(parts) < 3 or not parts[2]:
+        if not msg.topic:
             print(f"{self._ts()} Topic incorrecte")
             return False
-
-        disp_nom = parts[2]
 
         if not self.jwt_token and not self.login():
             return False
 
         for intent in range(2):
             disp_resp = self.session.get(
-                self.DISPOSITIU_URL + disp_nom,
+                self.DISPOSITIU_URL,
+                params={"topic": msg.topic},
                 headers=self._headers(),
                 timeout=self.HTTP_TIMEOUT,
             )
@@ -182,6 +180,8 @@ class Subscriber:
                 return False
 
             if disp_resp.status_code != 200:
+                if disp_resp.status_code == 409:
+                    print(f"{self._ts()} Topic ambigu: més d'un dispositiu té aquesta url")
                 print(
                     f"{self._ts()} No s'ha pogut consultar el dispositiu: "
                     f"HTTP {disp_resp.status_code}"
