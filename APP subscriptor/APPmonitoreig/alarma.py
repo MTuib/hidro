@@ -13,7 +13,7 @@ class Alarma(threading.Thread):
         super().__init__(daemon=True)
         self.stop_event = stop_event
 
-        base_dir = Path(__file__).resolve().parent
+        base_dir = Path(__file__).resolve().parents[1]
         self.pendents_dir = base_dir / "pendents"
 
         self.remitent = os.environ["SMTP_USER"]
